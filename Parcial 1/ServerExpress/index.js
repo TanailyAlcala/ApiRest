@@ -1,16 +1,16 @@
-const express=require('express');
-const app=express();
-const port=3000;
+const express = require('express');
+const cors = require('cors');
 
- 
-app.get('/',(req,res)=>{
-    res.sendFile(__dirname + 'public/index.html');
-    
+const app = express();
+const PORT = 3001;
+
+app.get('/data', (req, res,next) => {
+    res.sendFile( __dirname+ '/public/index.htm');
+});
+app.post('/data', (req, res) => {
+    res.send('Hello World');
 });
 
-/*app.post('/',(req,res)=>{
-    res.send('Hello World!');
-});*/
-app.listen(port,()=>{
-    console.log(`Server running at http://localhost:${port}`);
+app.listen(PORT, () => {
+    console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
 });

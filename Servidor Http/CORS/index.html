@@ -12,7 +12,7 @@
 
     <script>
         function hacerPeticion() {
-            fetch('http://localhost:4000/data')
+            fetch('http://localhost:3001/data')
             .then(response => response.json())
             .then(data => {
                 document.getElementById("resultado").innerText = data.mensaje;

@@ -1,15 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const port = 4000; // Puerto diferente al del Same-Origin
 
-// Habilitar CORS para cualquier origen
-app.use(cors());
+var http = require('http');
 
-app.get('/data', (req, res) => {
-    res.json({ mensaje: "Hola desde el servidor con CORS" });
-});
+let server = http.createServer(function (req,res){
+    res.writeHead(200, {'access-control-allow-origin': '*'}); //comentar
+    res.end('Hello World');
+})
 
-app.listen(port, () => {
-    console.log(`Servidor con CORS en http://localhost:${port}`);
-});
+server.listen(3000, () => {
+    console.log("Servidor HTTP corriendo en puerto 3001")
+})
