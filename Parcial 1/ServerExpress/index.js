@@ -1,7 +1,9 @@
 const express = require('express');
-//const cors = require('cors');
+const cors = require('cors');
 const app = express();
 const PORT = 3001;
+
+app.use(cors());
 
 app.get('/',(req, res,next)=>{
     res.sendFile( __dirname+ '/public/index.html');
