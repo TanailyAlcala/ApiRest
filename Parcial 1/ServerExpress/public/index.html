@@ -3,24 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Demostración CORS</title>
 </head>
 <body>
    <h1>Servidor express online</h1>
-   <script>
-    /*app.get('/proxy', async (req, res) => {
-    try {
-        // Petición al servidor en el puerto 3000
-        const response = await axios.get('http://localhost:3000/data');
-        res.json(response.data);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener los datos" });
-    }
-    });
+   <button onclick="hacerPeticion()">Hacer petición al servidor HTTP</button>
+   <p id="resultado"></p>
 
-    app.listen(PORT, () => {
-    console.log(`Servidor Express en http://localhost:${PORT}`);
-    });*/
+   <script>
+     function hacerPeticion() {
+        fetch('http://localhost:3000')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('resultado').innerText = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('resultado').innerText = 'Error en la petición.';
+            });
+    }
    </script>
 
 </body>
