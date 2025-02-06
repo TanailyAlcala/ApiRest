@@ -17,7 +17,7 @@ let server = http.createServer(function (req, res) {
     // Respuesta para solicitudes normales
     res.writeHead(200, {
         'Content-Type': 'text/plain',
-        /*'Access-Control-Allow-Origin': '*' */
+        'Access-Control-Allow-Origin': '*' 
          // Permitir todas las solicitudes
     });
     res.end('Hello World');
