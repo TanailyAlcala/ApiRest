@@ -24,6 +24,7 @@ app.get('/alumno',(req, res)=>{
     console.log(req.query);
     res.sendFile( __dirname+ '/public/index.html');
 });
+
 /*app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
 });*/
