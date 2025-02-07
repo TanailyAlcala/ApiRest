@@ -7,7 +7,7 @@ const PORT = 3001;
 app.use(cors());
 
 
-//Middleware de aplicación
+//Middleware de aplicación 
 app.use('/',(req,res,next)=>{
     console.log("Peticion al server");
     next();
@@ -19,14 +19,31 @@ app.use('/',(req,res,next)=>{
 app.use(express.json());
 app.use(express.text());
 
-
-app.get('/',(req, res,next)=>{
+//Ejercicio thunder GET
+app.get('/alumno',(req, res)=>{
+    console.log(req.query);
     res.sendFile( __dirname+ '/public/index.html');
 });
-app.post('/',(req, res)=>{
+/*app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/index.html');
+});*/
+
+//Ejercicio thunder POST
+app.post('/sistemas/:control',(req, res)=>{
+    console.log(req.params)
+    res.send('Buen día.');
+});
+/*app.post('/s',(req, res)=>{
     console.log(req.body)
     res.send('Hello World');
+});*/
+
+//Ejercicio thunder PATCH
+app.patch('/maestros',(req, res)=>{
+    console.log(req.body)
+    res.send('Hola mundo');
 });
+
 
 app.use((req,res)=>{
     res.status(404); 
