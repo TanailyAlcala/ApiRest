@@ -4,6 +4,8 @@ const { text } = require('body-parser');
 const app = express();
 const PORT = 3001;
 
+xmlparser = require('express-xml-bodyparser');
+
 app.use(cors());
 
 
@@ -18,6 +20,8 @@ app.use('/',(req,res,next)=>{
 //Middleware incorpordado en Express
 app.use(express.json());
 app.use(express.text());
+//Middleware para parsear XML
+app.use(xmlparser());
 
 //Ejercicio thunder GET
 app.get('/alumno',(req, res)=>{
@@ -38,6 +42,12 @@ app.post('/sistemas/:control',(req, res)=>{
     console.log(req.body)
     res.send('Hello World');
 });*/
+
+//XML
+app.post('/prefectos',(req, res)=>{
+    console.log(req.body)
+    res.send('Hello World');
+});
 
 //Ejercicio thunder PATCH
 app.patch('/maestros',(req, res)=>{
