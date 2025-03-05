@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mysql = require('mysql2');
+const halson = require('halson');
 
 const connection = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
@@ -7,8 +8,6 @@ const connection = mysql.createConnection({
     password: process.env.DB_PASSWORD || 'Aabt.lrna7',
     database: process.env.DB_NAME || 'musica'
 });
-//Hateoas 
-const hal = require('hal'); // ya lo tienes requeridado
 
 function consultarCancion(req, res, next) {
     let consulta = '';
@@ -27,16 +26,19 @@ function consultarCancion(req, res, next) {
         }
 
         if (results.length > 0) {
-            res.json({ resultado: results });
-            // Crear recurso HAL para los resultados
-            const recurso = new hal.Resource({ resultado: results });
-
-            // Añadir enlaces HATEOAS
-            recurso.link('self', `/usuarios${req.query.idUsuario ? `?idUsuario=${req.query.idUsuario}` : ''}`);
-            recurso.link('crear', '/usuarios'); // Enlace para crear un nuevo usuario
-            recurso.link('editar', '/usuarios/{id}'); // Enlace para editar un usuario, ejemplo de plantilla
-
-            res.json(recurso);
+            let canciones = results.map(cancion => {
+                return halson({
+                    id: cancion.id,
+                    artista: cancion.artista,
+                    titulo: cancion.cancion,
+                    album: cancion.album,
+                    genero: cancion.genero || 'Desconocido'
+                })
+                .addLink('self', `/canciones/${cancion.id}`)
+                .addLink('editar', `/canciones/${cancion.id}/editar`)
+                .addLink('eliminar', `/canciones/${cancion.id}/eliminar`);
+            });
+            res.json({ canciones });
         } else {
             res.json({ mensaje: 'No se encontraron resultados.' });
         }
@@ -57,18 +59,19 @@ function agregarCancion(req, res) {
             return res.status(500).json({ error: "Error en el servidor", detalle: err.message });
         }
 
-        res.json({
-            // Crear recurso HAL para el usuario creado
-        //const recurso = new hal.Resource({
+        const nuevaCancion = halson({
             mensaje: "Canción agregada exitosamente",
-            id_cancion: results.insertId
-        });
-         // Añadir enlace HATEOAS
-         recurso.link('self', `/usuarios?idUsuario=${results.insertId}`); // Enlace al nuevo usuario
-         recurso.link('crear', '/usuarios'); // Enlace para crear otro usuario
- 
-         res.json(recurso);
-         
+            id: results.insertId,
+            artista,
+            titulo: cancion,
+            album,
+            genero: genero || 'Desconocido'
+        })
+        .addLink('self', `/canciones/${results.insertId}`)
+        .addLink('editar', `/canciones/${results.insertId}/editar`)
+        .addLink('eliminar', `/canciones/${results.insertId}/eliminar`);
+
+        res.json(nuevaCancion);
     });
 }
 
