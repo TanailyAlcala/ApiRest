@@ -5,12 +5,16 @@ const http = require('http');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, 'VariablesDeEntorno/.env') });
 
+//const reply = require('server/reply.js');
+
+
 //let PORT = process.env.PORT;
 let PORT = process.env.PORT || 3001;
 
 
 const app = express();
 const routerCancion = require('./Router/cancionRouter.js');
+//const { status } = require('server/reply.js');
 
 // Middleware para parsear el body de las peticiones
 app.use(express.json());
@@ -28,4 +32,14 @@ app.listen(PORT, () => {
     console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
 });
 
-//instalar paquete ?? y agregar links y resursos 
+/*app.use((err,req,res,next)=>{
+    console.log(err);
+    res.status(500).json({
+        status=err.status,
+        mensaje=err.message,
+    })
+})*/
+
+app.use((error,req,res,next)=>{
+    res.status(500).json({error:error.message});
+});

@@ -28,4 +28,6 @@ app.listen(PORT, () => {
     console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
 });
 
-//instalar paquete ?? y agregar links y resursos 
+app.use((error,req,res,next)=>{
+    res.status(500).json({error:error.message});
+});

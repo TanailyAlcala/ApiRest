@@ -14,7 +14,7 @@ function consultarCancion(req, res, next) {
     let valores = [];
 
     if (!req.query.id) {
-        consulta = 'SELECT * FROM Canciones';
+        //consulta = 'SELECT * FROM Canciones';
     } else {
         consulta = 'SELECT * FROM Canciones WHERE id = ?';
         valores.push(req.query.id);
