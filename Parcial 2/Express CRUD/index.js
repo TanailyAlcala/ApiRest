@@ -5,16 +5,21 @@ const http = require('http');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, 'VariablesDeEntorno/.env') });
 
-//const reply = require('server/reply.js');
-
+//log errores 
+const winston = require('winston')
+const logger = winston.createLogger({
+    level: 'error',
+    format: winston.format.json(),
+    transports: [
+        new winston.transports.File({ filename: __dirname+ '/logs/error.log'})
+    ]
+})
 
 //let PORT = process.env.PORT;
 let PORT = process.env.PORT || 3001;
 
-
 const app = express();
 const routerCancion = require('./Router/cancionRouter.js');
-//const { status } = require('server/reply.js');
 
 // Middleware para parsear el body de las peticiones
 app.use(express.json());
@@ -32,14 +37,11 @@ app.listen(PORT, () => {
     console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
 });
 
-/*app.use((err,req,res,next)=>{
-    console.log(err);
-    res.status(500).json({
-        status=err.status,
-        mensaje=err.message,
-    })
-})*/
-
 app.use((error,req,res,next)=>{
     res.status(500).json({error:error.message});
 });
+
+app.use((err,rew,res,next)=>{
+    logger.error(err.message, {stack: err.stack});
+    res.status(500).send({error:err.message})
+})
