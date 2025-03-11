@@ -15,6 +15,12 @@ const logger = winston.createLogger({
     ]
 })
 
+try {
+    throw new Error('Somethingwent wrong');
+} catch (error){
+    logger.error(error.message, {stack: error.stack});
+}
+
 //let PORT = process.env.PORT;
 let PORT = process.env.PORT || 3001;
 
