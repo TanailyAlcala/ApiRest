@@ -7,8 +7,8 @@ const halson =require('halson');
 //xxxxx
 router.get('/', (req, res) => {
     let opciones = {
-        titulo: 'Lista de Usuarios',
-        mensaje: 'Aquí puedes ver la lista de usuarios'
+        titulo: 'Lista de canciones',
+        mensaje: 'Aquí se puede ver la lista de canciones disponibles'
     };
     res.render('index', opciones); // Renderiza "index.pug" dentro de "views"
 });
