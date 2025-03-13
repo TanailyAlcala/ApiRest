@@ -4,9 +4,25 @@ const xmlparser = require('express-xml-bodyparser');
 const http = require('http');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, 'VariablesDeEntorno/.env') });
+const winston = require('winston')
+
+const app = express(); 
+const pug = require('pug');
+
+//Pug como motor de vista
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'views'))
+
+app.get('/ruta',(req,res,next)=>{
+    let opciones ={
+        titulo : "Titulo de la plantilla",
+        subtitulo : "Subtitulo en la plantilla"
+    }
+    res.render('plantilla',opciones)
+})
+
 
 //log errores 
-const winston = require('winston')
 const logger = winston.createLogger({
     level: 'error',
     format: winston.format.json(),
@@ -24,7 +40,7 @@ try {
 //let PORT = process.env.PORT;
 let PORT = process.env.PORT || 3001;
 
-const app = express();
+
 const routerCancion = require('./Router/cancionRouter.js');
 
 // Middleware para parsear el body de las peticiones
@@ -51,3 +67,5 @@ app.use((err,rew,res,next)=>{
     logger.error(err.message, {stack: err.stack});
     res.status(500).send({error:err.message})
 })
+
+
