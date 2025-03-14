@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const xmlparser = require('express-xml-bodyparser');
-const http = require('http');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, 'VariablesDeEntorno/.env') });
 const winston = require('winston');
@@ -9,28 +8,38 @@ const { check, validationResult } = require('express-validator');
 const { agregarCancion } = require('./Controller/usuarioController');
 
 const app = express();
+
+// Middleware para parsear JSON antes de las rutas
 app.use(express.json());
+app.use(express.text());
+app.use(xmlparser());
+app.use(cors());
+
 const pug = require('pug');
 
 // Middleware de validación para agregar canción
 const validarCancion = [
     check('artista')
+        .trim()
         .isString().withMessage("El artista debe ser un texto válido.")
         .notEmpty().withMessage("El artista es obligatorio.")
         .isLength({ min: 3 }).withMessage("El nombre del artista debe tener al menos 3 caracteres."),
     
     check('cancion')
+        .trim()
         .isString().withMessage("El nombre de la canción debe ser un texto válido.")
         .notEmpty().withMessage("El nombre de la canción es obligatorio.")
         .isLength({ min: 2 }).withMessage("El nombre de la canción debe tener al menos 2 caracteres."),
     
     check('album')
+        .trim()
         .isString().withMessage("El álbum debe ser un texto válido.")
         .notEmpty().withMessage("El álbum es obligatorio.")
         .isLength({ min: 3 }).withMessage("El nombre del álbum debe tener al menos 3 caracteres."),
     
     check('genero')
         .optional()
+        .trim()
         .isString().withMessage("El género debe ser un texto válido."),
 
     (req, res, next) => {
@@ -76,14 +85,9 @@ let PORT = process.env.PORT || 3001;
 
 const routerCancion = require('./Router/cancionRouter.js');
 
-// Middleware para parsear el body de las peticiones
-app.use(express.json());
-app.use(express.text());
-app.use(xmlparser());
-app.use(cors());
-
 app.use('/usuarios', routerCancion);
 
+// Middleware para manejar rutas no encontradas
 app.use((req, res) => {
     res.status(404).send('404 Not Found');
 });
