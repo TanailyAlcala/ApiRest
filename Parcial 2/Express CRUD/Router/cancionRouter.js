@@ -4,7 +4,7 @@ const usuarioController = require('../Controller/usuarioController.js');
 const halson =require('halson');
 //const hal = require('hal');
 
-//xxxxx
+//pug
 router.get('/', (req, res) => {
     let opciones = {
         titulo: 'Lista de canciones',

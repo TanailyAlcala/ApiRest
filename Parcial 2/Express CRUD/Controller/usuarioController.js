@@ -46,11 +46,17 @@ function consultarCancion(req, res, next) {
 }
 
 function agregarCancion(req, res) {
+    //validacion de errores
+    const errores = validationResult(req);
+    if (!errores.isEmpty()) {
+        return res.status(400).json({ errores: errores.array() });
+    }
+
     const { artista, cancion, album, genero } = req.body;
 
-    if (!artista || !cancion || !album) {
+    /*if (!artista || !cancion || !album) {
         return res.status(400).json({ error: "Los campos artista, canción y álbum son obligatorios." });
-    }
+    }*/
 
     const consulta = `INSERT INTO Canciones (artista, cancion, album, genero) VALUES (?, ?, ?, ?)`;
 
