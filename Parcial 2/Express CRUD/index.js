@@ -5,91 +5,74 @@ const http = require('http');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, 'VariablesDeEntorno/.env') });
 const winston = require('winston');
+const { check, validationResult } = require('express-validator');
+const { agregarCancion } = require('./Controller/usuarioController');
 
-//validacion 
-const { checkSchema, validationResult } = require('express-validator');
-const { agregarCancion } = require('./usuarioController');
-
+const app = express();
 app.use(express.json());
-
-app.post("/cancion",
-    checkSchema({
-        artista: {
-            in: ['body'],
-            isString: true,
-            notEmpty: {
-                errorMessage: "El artista es obligatorio."
-            },
-            isLength: {
-                options: { min: 3 },
-                errorMessage: "El nombre del artista debe tener al menos 3 caracteres."
-            }
-        },
-        cancion: {
-            in: ['body'],
-            isString: true,
-            notEmpty: {
-                errorMessage: "El nombre de la canción es obligatorio."
-            },
-            isLength: {
-                options: { min: 2 },
-                errorMessage: "El nombre de la canción debe tener al menos 2 caracteres."
-            }
-        },
-        album: {
-            in: ['body'],
-            isString: true,
-            notEmpty: {
-                errorMessage: "El álbum es obligatorio."
-            },
-            isLength: {
-                options: { min: 3 },
-                errorMessage: "El nombre del álbum debe tener al menos 3 caracteres."
-            }
-        },
-        genero: {
-            in: ['body'],
-            optional: true,
-            isString: true,
-            errorMessage: "El género debe ser un texto válido."
-        }
-    }),
-    agregarCancion // Llama al controlador después de validar
-);
-
-const app = express(); 
 const pug = require('pug');
 
-//Pug como motor de vista
-app.set('view engine', 'pug')
-app.set('views', path.join(__dirname, 'views'))
+// Middleware de validación para agregar canción
+const validarCancion = [
+    check('artista')
+        .isString().withMessage("El artista debe ser un texto válido.")
+        .notEmpty().withMessage("El artista es obligatorio.")
+        .isLength({ min: 3 }).withMessage("El nombre del artista debe tener al menos 3 caracteres."),
+    
+    check('cancion')
+        .isString().withMessage("El nombre de la canción debe ser un texto válido.")
+        .notEmpty().withMessage("El nombre de la canción es obligatorio.")
+        .isLength({ min: 2 }).withMessage("El nombre de la canción debe tener al menos 2 caracteres."),
+    
+    check('album')
+        .isString().withMessage("El álbum debe ser un texto válido.")
+        .notEmpty().withMessage("El álbum es obligatorio.")
+        .isLength({ min: 3 }).withMessage("El nombre del álbum debe tener al menos 3 caracteres."),
+    
+    check('genero')
+        .optional()
+        .isString().withMessage("El género debe ser un texto válido."),
 
-app.get('/ruta',(req,res,next)=>{
-    let opciones ={
-        titulo : "Titulo de la plantilla",
-        subtitulo : "Subtitulo en la plantilla"
+    (req, res, next) => {
+        console.log("Middleware de validación ejecutado.");
+        const errores = validationResult(req);
+        if (!errores.isEmpty()) {
+            console.error("Errores encontrados:", errores.array());
+            return res.status(400).json({ error: errores.array() });
+        }
+        next();
     }
-    res.render('plantilla',opciones)
-})
+];
 
+app.post("/cancion", validarCancion, agregarCancion);
 
-//log errores 
+// Pug como motor de vista
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+app.get('/ruta', (req, res, next) => {
+    let opciones = {
+        titulo: "Título de la plantilla",
+        subtitulo: "Subtítulo en la plantilla"
+    };
+    res.render('plantilla', opciones);
+});
+
+// Logger de errores con Winston
 const logger = winston.createLogger({
     level: 'error',
     format: winston.format.json(),
     transports: [
-        new winston.transports.File({ filename: __dirname+ '/logs/error.log'})
+        new winston.transports.File({ filename: path.join(__dirname, '/logs/error.log') })
     ]
-})
+});
 
-try {
-    throw new Error('Somethingwent wrong');
-} catch (error){
-    logger.error(error.message, {stack: error.stack});
-}
+app.use((error, req, res, next) => {
+    logger.error(error.message, { stack: error.stack });
+    res.status(500).json({ error: error.message });
+});
 
 let PORT = process.env.PORT || 3001;
-
 
 const routerCancion = require('./Router/cancionRouter.js');
 
@@ -108,14 +91,3 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
 });
-
-app.use((error,req,res,next)=>{
-    res.status(500).json({error:error.message});
-});
-
-app.use((err,rew,res,next)=>{
-    logger.error(err.message, {stack: err.stack});
-    res.status(500).send({error:err.message})
-})
-
-
