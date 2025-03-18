@@ -21,20 +21,17 @@ const pug = require('pug');
 const validarCancion = [
     check('artista')
         .trim()
-        .isString().withMessage("El artista debe ser un texto válido.")
-        .notEmpty().withMessage("El artista es obligatorio.")
+        .isLength({ min: 1 }).withMessage("El artista es obligatorio.")
         .isLength({ min: 3 }).withMessage("El nombre del artista debe tener al menos 3 caracteres."),
     
     check('cancion')
         .trim()
-        .isString().withMessage("El nombre de la canción debe ser un texto válido.")
-        .notEmpty().withMessage("El nombre de la canción es obligatorio.")
+        .isLength({ min: 1 }).withMessage("El nombre de la canción es obligatorio.")
         .isLength({ min: 2 }).withMessage("El nombre de la canción debe tener al menos 2 caracteres."),
     
     check('album')
         .trim()
-        .isString().withMessage("El álbum debe ser un texto válido.")
-        .notEmpty().withMessage("El álbum es obligatorio.")
+        .isLength({ min: 1 }).withMessage("El álbum es obligatorio.")
         .isLength({ min: 3 }).withMessage("El nombre del álbum debe tener al menos 3 caracteres."),
     
     check('genero')
@@ -52,6 +49,7 @@ const validarCancion = [
         next();
     }
 ];
+
 
 app.post("/cancion", validarCancion, agregarCancion);
 
