@@ -17,7 +17,7 @@ app.use(cors());
 
 const pug = require('pug');
 
-// Middleware de validación para agregar canción
+//validación para agregar canción
 const validarCancion = [
     check('artista')
         .trim()
@@ -40,6 +40,8 @@ const validarCancion = [
         .isString().withMessage("El género debe ser un texto válido."),
 
     (req, res, next) => {
+        console.log("Middleware de validación ejecutado.");
+        console.log("Datos recibidos:", req.body); // Debug
         const errores = validationResult(req);
         if (!errores.isEmpty()) {
             console.error("Errores encontrados:", errores.array());
